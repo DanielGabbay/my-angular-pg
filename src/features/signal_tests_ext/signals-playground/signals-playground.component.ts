@@ -3,10 +3,9 @@ import {
   Component,
   inject,
   OnInit,
-  signal,
 } from "@angular/core";
 import { mockArrayToIterate } from "../../../utils/glob-fns";
-import { ApiService } from "../../../services/api.service";
+import { UsersService } from "../../../services/users.service";
 
 @Component({
   selector: "app-signals-playground",
@@ -18,7 +17,7 @@ import { ApiService } from "../../../services/api.service";
 })
 export class SignalsPlaygroundComponent implements OnInit {
   // Services:
-  protected readonly apiService: ApiService = inject(ApiService);
+  protected readonly usersService: UsersService = inject(UsersService);
 
   // Constants:
   protected _mockArrToIter = mockArrayToIterate(5000);
@@ -29,5 +28,12 @@ export class SignalsPlaygroundComponent implements OnInit {
   constructor() {}
 
   // Methods:
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    debugger;
+
+    // this.usersService.getAllUsers().subscribe((users) => {
+    //   console.log(users);
+    //   debugger;
+    // });
+  }
 }

@@ -1,13 +1,15 @@
-import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
+import { AngularFireDatabase } from "@angular/fire/compat/database";
+import { ApiName } from "../data/api.types";
 import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
 })
 export class ApiService {
+  public readonly apiName: ApiName;
   // Providers and Services
-  private readonly http: HttpClient = inject(HttpClient);
+  private readonly db: AngularFireDatabase = inject(AngularFireDatabase);
 
   // Constants
   public static readonly BASE_API_URL: URL = new URL(
@@ -15,10 +17,7 @@ export class ApiService {
   );
 
   // Constructor
-  constructor() {
-    const usersApi = this.generateApiUrl("/users.json");
-    console.log(usersApi);
-  }
+  constructor() {}
 
   public generateApiUrl(apiPath: string): string {
     // Ensure that the apiPath does not start with a '/' and does not end with '/' or '.json'
@@ -36,39 +35,65 @@ export class ApiService {
     return newApiUrl.toString();
   }
 
-  // --------------------- API Calls ---------------------
-  // GET
-  public get<Response>(apiPath: string): Observable<Response> {
-    return this.http.get<Response>(this.generateApiUrl(apiPath));
+  // Methods:
+
+  // GET: Get all items of the specified type from the database.
+  public get<T>(apiName: ApiName): Observable<T[]> {
+    return this.db.list<T>(apiName).valueChanges();
   }
 
-  // POST
-  public post<Request, Response>(
-    apiPath: string,
-    body: Request
-  ): Observable<Response> {
-    return this.http.post<Response>(this.generateApiUrl(apiPath), body);
+  // POST: Add the item to the database. Throws an error if the item already exists.
+  public post<T>(apiName: ApiName, item: T): Observable<T> {
+    // Get the id of the item
+    const id = item["id"];
+    if (!id) {
+      throw new Error("Item does not have an id.");
+    }
+
+    return new Observable((observer) => {
+      this.db
+        .list<T>(apiName)
+        .set(id, item)
+        .then(() => {
+          observer.next(item);
+        });
+    });
   }
 
-  // PUT
-  public put<Request, Response>(
-    apiPath: string,
-    body: Request
-  ): Observable<Response> {
-    return this.http.put<Response>(this.generateApiUrl(apiPath), body);
+  // PUT: Update the item in the database. Throws an error if the item does not exist.
+  public put<T>(apiName: ApiName, item: T): Observable<T> {
+    // Get the id of the item
+    const id = item["id"];
+    if (!id) {
+      throw new Error("Item does not have an id.");
+    }
+
+    return new Observable((observer) => {
+      this.db
+        .list<T>(apiName)
+        .update(id, item)
+        .then(() => {
+          observer.next(item);
+        });
+    });
   }
 
-  // DELETE
-  public delete<Response>(apiPath: string): Observable<Response> {
-    return this.http.delete<Response>(this.generateApiUrl(apiPath));
-  }
+  // DELETE: Delete the item from the database. Throws an error if the item does not exist.
+  public delete<T>(apiName: ApiName, item: T): Observable<T> {
+    // Get the id of the item
+    const id = item["id"];
+    if (!id) {
+      throw new Error("Item does not have an id.");
+    }
 
-  // PATCH
-  public patch<Request, Response>(
-    apiPath: string,
-    body: Request
-  ): Observable<Response> {
-    return this.http.patch<Response>(this.generateApiUrl(apiPath), body);
+    return new Observable((observer) => {
+      this.db
+        .list<T>(apiName)
+        .remove(id)
+        .then(() => {
+          observer.next(item);
+        });
+    });
   }
 }
 
