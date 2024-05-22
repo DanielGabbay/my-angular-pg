@@ -1,0 +1,8 @@
+@function dynamic-divider-color($color) {
+  @if type-of($color) == 'color' {
+    $color-str: unquote(inspect($color));
+    @return 'divider-' + str-replace($color-str, '#', '');
+  } @else {
+    @return 'divider-' + str-replace($color, '#', '');
+  }
+}

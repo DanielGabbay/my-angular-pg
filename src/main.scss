@@ -1,0 +1,8 @@
+$colors: (red, blue, pink);
+
+@each $color in $colors {
+  .divider-#{$color} {
+    width: 100%;
+    border-bottom: 2px solid #{$color};
+  }
+}
