@@ -1,15 +1,18 @@
-import { CommentsEntity } from './comment.type';
-import { PostsEntity } from './post.type';
-import { ProfileEntity } from './profile.type';
-import { UserEntity } from './user.type';
+import { CommentsEntity } from "./comment.type";
+import { PostsEntity } from "./post.type";
+import { ProfileEntity } from "./profile.type";
+import { UserEntity } from "./user.type";
 
 export enum ApiName {
-  Users = 'users',
+  Posts = "posts",
+  Comments = "comments",
+  Profile = "profile",
+  Users = "users",
 }
 
-export interface DB {
-  comments?: CommentsEntity[];
-  posts?: PostsEntity[];
-  profile: ProfileEntity;
-  users?: UserEntity[];
-}
+export type DB = {
+  [ApiName.Comments]: CommentsEntity[];
+  [ApiName.Posts]: PostsEntity[];
+  [ApiName.Profile]: ProfileEntity;
+  [ApiName.Users]: UserEntity[];
+};

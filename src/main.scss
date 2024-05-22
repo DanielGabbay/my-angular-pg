@@ -1,8 +1,25 @@
-$colors: (red, blue, pink);
+// Use @use rule to import meta module.
+@use 'sass:meta';
 
-@each $color in $colors {
-  .divider-#{$color} {
+// Declare $colors as a list using parentheses.
+$colors: ('red', 'blue', 'pink');
+
+// Define a mixin to create divider classes.
+@mixin divider($color) {
+  .divider-#{$color} { // Use interpolation to join the class name and the color.
     width: 100%;
-    border-bottom: 2px solid #{$color};
+    border-bottom: 2px solid #{map-get($color-map, $color)}; // Use map-get function to retrieve the color value.
   }
+}
+
+// Define a map to associate color names with their actual values.
+$color-map: (
+  'red': #ff0000,
+  'blue': #0000ff,
+  'pink': #ffc0cb
+);
+
+// Iterate over each key in the $color-map to create classes.
+@each $color, $color-value in $color-map {
+  @include divider($color);
 }
